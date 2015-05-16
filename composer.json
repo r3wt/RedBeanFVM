@@ -1,5 +1,5 @@
 {
-    "name": "RedBeanFVM/RedBeanFVM",
+    "name": "redbean-fvm/redbean-fvm",
     "description": "Redbean FVM makes Filtering,Validating , and Generating RedBean Models easy.",
     "license": "MIT",
     "keywords": ["RedBean","Plugin","Filter","Validation","Model","Data"],
@@ -10,9 +10,7 @@
         }
     ],
     "require": {},
-    "require-dev": {
-        "phpunit/phpunit": "*"
-    },
+    "require-dev": {},
     "autoload": {
         "psr-0": {
             "RedBeanFVM": "."
