@@ -139,10 +139,10 @@ RedbeanFVM makes Filtering, Validating , and Generating RedBean Models easy.
 
     //create a custom filter to validate the `year` of the automobile
     $fvm->custom_filter('car_year',function($input){
-        if(!preg_match('/^[0-9]{4}$/',$str)){
+        if(!preg_match('/^[0-9]{4}$/',$input)){
             throw new \exception('Invalid Year entered');
         }
-        return $str;
+        return $input;
     });
 
     //create a custom filter to validate the vin number of the automobile.

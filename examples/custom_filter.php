@@ -25,10 +25,10 @@ if(!empty($_POST)){
     //now we must create the custom filters ...
     
     $fvm->custom_filter('car_year',function($input){
-        if(!preg_match('/^[0-9]{4}$/',$str)){
+        if(!preg_match('/^[0-9]{4}$/',$input)){
             throw new \exception('Invalid Year entered');
         }
-        return $str;
+        return $input;
     });
     
     $fvm->custom_filter('car_vin_number',function($input){
