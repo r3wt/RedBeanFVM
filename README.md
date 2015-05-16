@@ -177,6 +177,19 @@ RedbeanFVM makes Filtering, Validating , and Generating RedBean Models easy.
         return $fvm->name($input,$min_length,$max_length);
     });
     ```
+    
+8. calling custom filter directly on $fvm is possible.
+
+    ```php
+
+    $fvm->custom_filter('foo',function($input){
+        return 'foo';
+    });
+
+    $input = 'abcdefg';
+
+    $bean->foo = $filter->foo($input);
+    ```
 
 ### Requirements:
 

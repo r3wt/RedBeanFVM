@@ -88,6 +88,35 @@ class RedBeanFVM
             include $file;
         }
     }
+	
+	/**
+	 * configure multiple configuration settings
+	 * @params array
+	 */
+	public static function configureAll($c)
+	{
+		if(!is_array($c)){
+			throw new \exception('RedBeanFVM :: configureAll() expects an array! `'.gettype($c).'` given.';
+		}
+		foreach($c as $k => $v){
+			self::configure($k,$v);
+		}
+	}
+	
+	/**
+     * Configures a single property in the config array.
+	 * @param string $k the key in the config array
+	 * @param mixed $v the new value to set.
+     * @return void
+     */
+	public static function configure($k,$v)
+	{
+		if(isset(self::$config[$k])){
+			self::$config[$k] = $v;
+		}else{
+			throw new \exception('RedBeanFVM :: configure() `'.$k.'` is not a valid configuration option.');
+		}
+	}
     
     /**
      * Register the autoloader for people who arent using composer.
