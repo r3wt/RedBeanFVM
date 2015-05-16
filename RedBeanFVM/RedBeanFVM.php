@@ -83,7 +83,7 @@ class RedBeanFVM
      */
     public static function autoload($class)
     {
-        $file =  __DIR__ . str_replace('\\','/', preg_replace('/'. __NAMESPACE__ .'/','',$class,1) . '.php';
+        $file =  __DIR__ . str_replace('\\','/', preg_replace('/'. __NAMESPACE__ .'/','',$class,1)) . '.php';
         if(file_exists($file)){
             include $file;
         }
