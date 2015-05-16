@@ -188,7 +188,7 @@ RedbeanFVM makes Filtering, Validating , and Generating RedBean Models easy.
 
     $input = 'abcdefg';
 
-    $bean->foo = $filter->foo($input);
+    $bean->foo = $fvm->foo($input);
     ```
 
 ### Requirements:
