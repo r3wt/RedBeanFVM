@@ -283,21 +283,21 @@ class RedBeanFVM
         return implode('-',$t);
     }
     
-    public function password_hash($pass)
+    public function password_hash($input)
     {
-        return password_hash($pass, self::$config['password']['algo'], ['cost'=>self::$config['password']['cost']]);
+        return password_hash($input, self::$config['password']['algo'], ['cost'=>self::$config['password']['cost']]);
     }
     
     //format a paragraph. good for textarea inputs.
-    public function paragraph($str)
+    public function paragraph($input)
     {
-        return nl2br(strip_tags($str));
+        return str_replace(['\r\n','\n'],'<br/>',strip_tags($input));
     }
     
     //remove line feeds. 
-    public function rmnl($str)
+    public function rmnl($input)
     {
-        return preg_replace('/\s+/', ' ', trim($str));
+        return preg_replace('/\s+/', ' ', trim($input));
     }
     
     /* BEGIN US SPECIFIC FUNCTIONS IN FUTURE THIS BLOCK SHOULD BE MOVED TO a Locales class. */
