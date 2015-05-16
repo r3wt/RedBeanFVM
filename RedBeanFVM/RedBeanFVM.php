@@ -291,7 +291,7 @@ class RedBeanFVM
     //format a paragraph. good for textarea inputs.
     public function paragraph($str)
     {
-        return nl2br($this->min($str));
+        return nl2br(strip_tags($str));
     }
     
     //remove line feeds. 
