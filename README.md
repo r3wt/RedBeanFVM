@@ -173,8 +173,8 @@ RedbeanFVM makes Filtering, Validating , and Generating RedBean Models easy.
     $min_length = 10;
     $max_length = 55;
 
-    $fvm->custom_filter('name_custom',function($input) use($fvm,$min,$max){
-        return $fvm->name($input,$min,$max);
+    $fvm->custom_filter('name_custom',function($input) use($fvm,$min_length,$max_length){
+        return $fvm->name($input,$min_length,$max_length);
     });
     ```
 

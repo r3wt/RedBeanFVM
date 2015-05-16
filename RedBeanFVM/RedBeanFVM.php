@@ -159,7 +159,7 @@ class RedBeanFVM
     private function custom_filter_exec($function,$input)
     {
         $method = self::$custom_filters[$function];
-        return call_user_func($method,$input);
+        return call_user_func_array($method,$input);
     }
     
     /**
@@ -283,7 +283,7 @@ class RedBeanFVM
         return implode('-',$t);
     }
     
-    public functiom password_hash($pass)
+    public function password_hash($pass)
     {
         return password_hash($pass, self::$config['password']['algo'], ['cost'=>self::$config['password']['cost']]);
     }
