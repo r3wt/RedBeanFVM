@@ -16,175 +16,171 @@ RedbeanFVM makes Filtering, Validating , and Generating RedBean Models easy.
   
 ### Installation
 
-Two ways to install:
 
-**composer:**
-1. install with composer
-```sh
-composer require redbean-fvm/redbean-fvm
-```
-2. add code to project
-```php
-require 'vendor/autoload.php';
-$fvm = \RedBeanFVM\RedBeanFVM::getInstance();
-```
+**Install via Composer:**
 
-**manual:**
+1. install with composer:
+    ```sh
+    composer require redbean-fvm/redbean-fvm
+    ```
+    
+2. add code to project:
+    ```php
+    require 'vendor/autoload.php';
+    $fvm = \RedBeanFVM\RedBeanFVM::getInstance();
+    ```
+
+**Download and Manually Install:**
+
 1. download/clone the package:
-```sh
-git clone https://github.com/r3wt/RedBeanFVM.git
-```
+    ```sh
+    git clone https://github.com/r3wt/RedBeanFVM.git
+    ```
+
 2. add this snipped of code:
-```php
-require 'RedBeanFVM/RedBeanFVM.php';
-\RedBeanFVM\RedBeanFVM::registerAutoloader(); // for future use
-$fvm = \RedBeanFVM\RedBeanFVM::getInstance();
-```
+    ```php
+    require 'RedBeanFVM/RedBeanFVM.php';
+    \RedBeanFVM\RedBeanFVM::registerAutoloader(); // for future use
+    $fvm = \RedBeanFVM\RedBeanFVM::getInstance();
+    ```
 
 ### Examples
 
 1. basic usage:
-```php
-$bean = R::dispense('user'); // the redbean model
+    ```php
+    $bean = R::dispense('user'); // the redbean model
 
-$required = [
-	'Name'=>'name', // post key + rule(s)
-	'Email'=>'email',
-	'User_Name'=>['rmnl','az_lower'],
-	'Password'=>'password_hash',
-];
+    $required = [
+        'Name'=>'name', // post key + rule(s)
+        'Email'=>'email',
+        'User_Name'=>['rmnl','az_lower'],
+        'Password'=>'password_hash',
+    ];
 
-$fvm->generate_model($bean,$required); //the magic
+    $fvm->generate_model($bean,$required); //the magic
 
-R::store($bean);
-```
+    R::store($bean);
+    ```
 
 2. optional parameters:
-```php
-$bean = R::dispense('user'); // the redbean model
+    ```php
+    $bean = R::dispense('user'); // the redbean model
 
-$required = [
-	'Name'=>'name', // post key + rule(s)
-	'Email'=>'email',
-	'User_Name'=>['rmnl','az_lower'],
-	'Password'=>'password_hash',
-];
-//here we are adding the optional array. these fields are optional, so we raise no exception for missing values.
-$optional = [
-	'username'=>'min' //min is the minimum validation/filter
-];
+    $required = [
+        'Name'=>'name', // post key + rule(s)
+        'Email'=>'email',
+        'User_Name'=>['rmnl','az_lower'],
+        'Password'=>'password_hash',
+    ];
+    //here we are adding the optional array. these fields are optional, so we raise no exception for missing values.
+    $optional = [
+        'username'=>'min' //min is the minimum validation/filter
+    ];
 
-$fvm->generate_model($bean,$required,$optional); //the magic
+    $fvm->generate_model($bean,$required,$optional); //the magic
 
-R::store($bean);
-```
+    R::store($bean);
+    ```
 
 3. custom data source
 
-```php
-$bean = R::dispense('user'); // the redbean model
+    ```php
+    $bean = R::dispense('user'); // the redbean model
 
-$required = [
-	'Name'=>'name', // post key + rule(s)
-	'Email'=>'email',
-	'User_Name'=>['rmnl','az_lower'],
-	'Password'=>'password_hash',
-];
-$optional = [
-	'username'=>'min' //min is the minimum validation/filter
-];
+    $required = [
+        'Name'=>'name', // post key + rule(s)
+        'Email'=>'email',
+        'User_Name'=>['rmnl','az_lower'],
+        'Password'=>'password_hash',
+    ];
+    $optional = [
+        'username'=>'min' //min is the minimum validation/filter
+    ];
 
-// here we add a custom data source
+    // here we add a custom data source
 
-$data = array_merge($_POST,$_GET);
+    $data = array_merge($_POST,$_GET);
 
-$fvm->generate_model($bean,$required,$optional,$data); //the magic
+    $fvm->generate_model($bean,$required,$optional,$data); //the magic
 
-R::store($bean);
-```
+    R::store($bean);
+    ```
 
 4. manual usage of the methods. 
-```php
-$unsafeData = 'alfjasldfajsl1000afdasjlkl';
-//we can use RedBeanFVM manually too.	
-$bean->someProperty = $fvm->cast_int($unsafeData);
-```
+    ```php
+    $unsafeData = 'alfjasldfajsl1000afdasjlkl';
+    //we can use RedBeanFVM manually too.   
+    $bean->someProperty = $fvm->cast_int($unsafeData);
+    ```
 
 5. chainable methods with chain()
-```php
-$input = $_POST['username'];
+    ```php
+    $input = $_POST['username'];
 
-$rules = ['rmnl','az','name'];
+    $rules = ['rmnl','az','name'];
 
-$bean->user_name = $fvm->chain($rules,$input);
-```
+    $bean->user_name = $fvm->chain($rules,$input);
+    ```
 
 6. custom filters(named closures)
-```php
-$fvm = \RedBeanFVM\RedBeanFVM::getInstance();
-	
-$bean = R::dispense('automobile');
+    ```php
+    $fvm = \RedBeanFVM\RedBeanFVM::getInstance();
+        
+    $bean = R::dispense('automobile');
 
-$required = [
-	'make'=>'min',
-	'model'=>'min',
-	'year'=>'car_year', //this is custom filter
-	'vin-number'=>'car_vin_number',// so is this
-];
+    $required = [
+        'make'=>'min',
+        'model'=>'min',
+        'year'=>'car_year', //this is custom filter
+        'vin-number'=>'car_vin_number',// so is this
+    ];
 
-//now we must create the custom filters ...
+    //now we must create the custom filters ...
 
-//create a custom filter to validate the `year` of the automobile
-$fvm->custom_filter('car_year',function($input){
-	if(!preg_match('/^[0-9]{4}$/',$str)){
-		throw new \exception('Invalid Year entered');
-	}
-	return $str;
-});
+    //create a custom filter to validate the `year` of the automobile
+    $fvm->custom_filter('car_year',function($input){
+        if(!preg_match('/^[0-9]{4}$/',$str)){
+            throw new \exception('Invalid Year entered');
+        }
+        return $str;
+    });
 
-//create a custom filter to validate the vin number of the automobile.
-$fvm->custom_filter('car_vin_number',function($input){
-	// vin numbers are 17 in length alphanumeric
-	if(!preg_match('/^[0-9A-Za-z]{17}$/',$input)){
-		throw new \exception('Invalid VIN entered.');
-	}
-	return strtoupper($input);//we dont really care if they typed lower case. we can fix it for them.
-});
+    //create a custom filter to validate the vin number of the automobile.
+    $fvm->custom_filter('car_vin_number',function($input){
+        // vin numbers are 17 in length alphanumeric
+        if(!preg_match('/^[0-9A-Za-z]{17}$/',$input)){
+            throw new \exception('Invalid VIN entered.');
+        }
+        return strtoupper($input);//we dont really care if they typed lower case. we can fix it for them.
+    });
 
-//now we can use our custom filters for year and vin.
-$required = [
-	'make'=>'min',
-	'model'=>'min',
-	'year'=>'car_year', //this is custom filter
-	'vin-number'=>'car_vin_number',// so is this
-];
+    //now we can use our custom filters for year and vin.
+    $required = [
+        'make'=>'min',
+        'model'=>'min',
+        'year'=>'car_year', //this is custom filter
+        'vin-number'=>'car_vin_number',// so is this
+    ];
 
-$fvm->generate_model($bean,$required);
-```
+    $fvm->generate_model($bean,$required);
+    ```
 
 7. advanced custom filters.
  - Some functions like `name` accept optional second parameters. 
  - by design, FVM only accepts 1 argument, the $input to be filtered. 
  - we can work around this like so:
-```php
-$min_length = 10;
-$max_length = 55;
+    ```php
+    $min_length = 10;
+    $max_length = 55;
 
-$fvm->custom_filter('name_custom',function($input) use($filter,$min,$max){
-	return $filter->name($input,$min,$max);
-});
-```
+    $fvm->custom_filter('name_custom',function($input) use($filter,$min,$max){
+        return $filter->name($input,$min,$max);
+    });
+    ```
 
 ### Requirements:
 
 RedBean, obviously `http://www.redbeanphp.com/`
-
-Readmes, how to use them in your own application can be found here:
-
-* [plugins/dropbox/README.md](https://github.com/joemccann/dillinger/tree/master/plugins/dropbox/README.md)
-* [plugins/github/README.md](https://github.com/joemccann/dillinger/tree/master/plugins/github/README.md)
-* [plugins/googledrive/README.md](https://github.com/joemccann/dillinger/tree/master/plugins/googledrive/README.md)
-* [plugins/onedrive/README.md](https://github.com/joemccann/dillinger/tree/master/plugins/onedrive/README.md)
 
 ### Development
 

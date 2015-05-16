@@ -17,26 +17,26 @@ class RedBeanFVM
     private static $locale; //in the future, language specific packs will reside under this variable.
     private static $custom_filters = []; //allow users to register custom filters. 
     
-	/**
-	 * Protected Ctor
-	 */
+    /**
+     * Protected Ctor
+     */
     protected function __construct(){}
     
-	/**
-	 * Retrieve the Singleton instance of RedBeanFVM
-	 * @return RedBeanFVM
-	 */
+    /**
+     * Retrieve the Singleton instance of RedBeanFVM
+     * @return RedBeanFVM
+     */
     public static function getInstance()
     {
         return (is_null(self::$instance) ? self::$instance = new self : self::$instance);
     }
     
-	/**
-	 * This magic method searches the list of user defined filters for a match. if none is found, an exception is raised.
-	 * @param callable $function
-	 * @param mixed $args
-	 * @return mixed 
-	 */
+    /**
+     * This magic method searches the list of user defined filters for a match. if none is found, an exception is raised.
+     * @param callable $function
+     * @param mixed $args
+     * @return mixed 
+     */
     public function __call($function,$args = false)
     {
         if($this->custom_filter_exists($function)){
@@ -45,11 +45,11 @@ class RedBeanFVM
         throw new \exception('RedbeanFVM ::  Method `'.$function.'` doesn\'t exist!');
     }
     
-	/**
-	 * Autoloader
-	 * @param $class
-	 * @return void
-	 */
+    /**
+     * Autoloader
+     * @param $class
+     * @return void
+     */
     public static function autoload($class)
     {
         $file =  __DIR__ . str_replace('\\','/', preg_replace('/'. __NAMESPACE__ .'/','',$class,1) . '.php';
@@ -58,10 +58,10 @@ class RedBeanFVM
         }
     }
     
-	/**
-	 * Register the autoloader for people who arent using composer.
-	 * @return void
-	 */
+    /**
+     * Register the autoloader for people who arent using composer.
+     * @return void
+     */
     public static function registerAutoloader()
     {
         spl_autoload_register('\\RedBeanFVM\\RedBeanFVM::autoload');
@@ -110,32 +110,32 @@ class RedBeanFVM
         }
     }
     
-	/**
-	 * checks $custom_filters for the presence of the named callable
-	 * @param string $function the named callable
-	 * @return bool
-	 */
+    /**
+     * checks $custom_filters for the presence of the named callable
+     * @param string $function the named callable
+     * @return bool
+     */
     private function custom_filter_exists($function)
     {
         return isset(self::$custom_filters[$function]);
     }
     /**
-	 * executes the custom filtering functions and returns the output
-	 * @param string $function the named callable
-	 * @param mixed $input the data to be filtered by the function.
-	 * @return mixed
-	 */
+     * executes the custom filtering functions and returns the output
+     * @param string $function the named callable
+     * @param mixed $input the data to be filtered by the function.
+     * @return mixed
+     */
     private function custom_filter_exec($function,$input)
     {
         $method = self::$custom_filters[$function];
         return call_user_func($method,$input);
     }
     
-	/**
-	 * creates a named callable and adds it to $custom_filters array. useful for creating custom filters.
-	 * @param string $name the name to assign to the callable.
-	 * @param closure $callable the callback function.
-	 */
+    /**
+     * creates a named callable and adds it to $custom_filters array. useful for creating custom filters.
+     * @param string $name the name to assign to the callable.
+     * @param closure $callable the callback function.
+     */
     public function custom_filter($name,$callable)
     {
         if(empty($name)){
@@ -144,25 +144,25 @@ class RedBeanFVM
         if(!is_callable($callable)){
             throw new \exception('RedbeanFVM :: custom_filter() Method `'.$name.'` isn\'t a valid callable!');
         }
-		$info = new \ReflectionFunction($callable);
-		if( $info->getNumberOfParameters() !== 1 || $info->getNumberOfRequiredParameters() !== 1 ){
-			throw new \exception('RedbeanFVM :: custom_filter() Method`'.$name.'` declares an invalid number of arguments! only one argument is allowed!' );
-		}
+        $info = new \ReflectionFunction($callable);
+        if( $info->getNumberOfParameters() !== 1 || $info->getNumberOfRequiredParameters() !== 1 ){
+            throw new \exception('RedbeanFVM :: custom_filter() Method`'.$name.'` declares an invalid number of arguments! only one argument is allowed!' );
+        }
         self::$custom_filters[$name] = $callable;
     }
     
     /**
-	 * executes an array of filters on an input and returns the output.
-	 * @param Array $functions
-	 * @param mixed $input
-	 * @return string
-	 */
+     * executes an array of filters on an input and returns the output.
+     * @param Array $functions
+     * @param mixed $input
+     * @return string
+     */
     public function chain($functions,$input)
     {
         foreach($functions as $callable){
             $input = $this->{$callable}($input);
         }
-		return $input;
+        return $input;
     }
     
     
@@ -172,13 +172,13 @@ class RedBeanFVM
         return preg_replace( '/[^a-zA-Z]/','', trim($str) );
     }
     
-	// self explanatory
+    // self explanatory
     public function az_upper($str)
     {
         return strtoupper($this->az($str));
     }
     
-	// self explanatory
+    // self explanatory
     public function az_lower($str)
     {
         return strtolower($this->az($str));
@@ -190,7 +190,7 @@ class RedBeanFVM
         return preg_replace( '/[^A-Za-z\,\.\-\&\# ]+/','', trim($name) );
     }
     
-	//cast to int
+    //cast to int
     public function cast_int($val)
     {
         return ((int) $val);
@@ -212,13 +212,13 @@ class RedBeanFVM
     }
     
     //remove all non word charachters with safeguard. 
-	//unfortunately this method is not chainable, however you could work around it by defining a custom filter with a use statement:
-	/*
-		$min = 5;
-		$max = 55;
-		$fvm = RedBeanFVM::getInstance();
-		$custom_filter = function($input) use($min,$max,$filter){ return $filter->name($input,$min,$max); }
-	*/
+    //unfortunately this method is not chainable, however you could work around it by defining a custom filter with a use statement:
+    /*
+        $min = 5;
+        $max = 55;
+        $fvm = RedBeanFVM::getInstance();
+        $custom_filter = function($input) use($min,$max,$filter){ return $filter->name($input,$min,$max); }
+    */
     public function name($name, $min = 2,$max = 30)
     {
         $name = preg_replace( '/[^ \w]+/','', trim($name) );
