@@ -90,6 +90,15 @@ class RedBeanFVM
     }
     
     /**
+     * Register the autoloader for people who arent using composer.
+     * @return void
+     */
+    public static function registerAutoloader()
+    {
+        spl_autoload_register('\\RedBeanFVM\\RedBeanFVM::autoload');
+    }
+    
+    /**
      * configure multiple configuration settings
      * @params array
      */
@@ -116,15 +125,6 @@ class RedBeanFVM
         }else{
             throw new \exception('RedBeanFVM :: configure() `'.$k.'` is not a valid configuration option.');
         }
-    }
-    
-    /**
-     * Register the autoloader for people who arent using composer.
-     * @return void
-     */
-    public static function registerAutoloader()
-    {
-        spl_autoload_register('\\RedBeanFVM\\RedBeanFVM::autoload');
     }
     
     /**
