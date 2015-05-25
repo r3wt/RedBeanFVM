@@ -66,7 +66,7 @@ class RedBeanFVM
     public static function configure($c)
     {
         if(!is_array($c)){
-            throw new \exception('RedBeanFVM :: configureAll() expects an array! `'.gettype($c).'` given.';
+            throw new \exception('RedBeanFVM :: configureAll() expects an array! `'.gettype($c).'` given.');
         }
         foreach($c as $k => $v){
             if(isset(self::$config[$k])){
