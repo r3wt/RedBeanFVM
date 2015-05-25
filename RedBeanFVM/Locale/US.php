@@ -15,7 +15,7 @@ class US
         return $input;
     }
     
-    public function us_state_abbr($state)
+    public function us_state_abbr($input)
     {
         $input = strtoupper($input);
         $states = array_keys(self::$states);
@@ -40,7 +40,7 @@ class US
         if (!preg_match( '/^\d{5}([\-]?\d{4})?$/i',$input)){
             throw new \exception('Invalid Zip Code Entered.');
         }
-        return $str;
+        return $input;
     }
 
     private static $states = [
@@ -97,4 +97,3 @@ class US
         'WY'=>'WYOMING'
     ];
 }
-

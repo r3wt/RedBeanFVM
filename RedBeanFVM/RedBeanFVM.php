@@ -198,10 +198,10 @@ class RedBeanFVM
      * @param mixed $input the data to be filtered by the function.
      * @return mixed
      */
-    private function custom_filter_exec($function,$input)
+    private function custom_filter_exec($function,$args)
     {
         $method = self::$custom_filters[$function];
-        return call_user_func_array($method,$input);
+        return call_user_func_array($method,$args);
     }
     
     /**
@@ -220,9 +220,9 @@ class RedBeanFVM
      * @param mixed $input the data to be filtered by the function.
      * @return mixed
      */
-    private function locale_filter_exec($function,$input)
+    private function locale_filter_exec($function,$args)
     {
-        return self::$locale_filters->{$function}($input);
+        return call_user_func_array([self::$locale_filters,$function],$args);
     }
     
     /**
