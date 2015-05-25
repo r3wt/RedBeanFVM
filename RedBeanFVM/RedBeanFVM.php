@@ -222,7 +222,7 @@ class RedBeanFVM
      */
     private function locale_filter_exec($function,$input)
     {
-        return self::$localefilters->{$function}($input);
+        return self::$locale_filters->{$function}($input);
     }
     
     /**
