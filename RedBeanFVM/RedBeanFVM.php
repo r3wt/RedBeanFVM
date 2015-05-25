@@ -247,8 +247,16 @@ class RedBeanFVM
     //remove all but typically allowed charachters in a business entity name, Eg: #1 Plumbing-Contractors & Associates, Ltd.
     public function business_name($name)
     {
-        return preg_replace( '/[^A-Za-z\,\.\-\&\# ]+/','', trim($name) );
+        return preg_replace( '/[^A-Za-z\,\.\-\&\#0-9 ]+/','', trim($name) );
     }
+	
+	
+	public function user_name($input,$min=3,$max=55)
+	{
+		if( !preg_match( '/^[^A-Za-z.\-_0-9 ]{'.$min.','.$max.'}$/', trim($input) ) )
+            throw new \exception('Username may only contain letters, numbers, periods, spaces, and underscores.');
+        }
+	}
     
     //cast to int
     public function cast_int($val)
