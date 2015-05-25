@@ -99,42 +99,13 @@ class RedBeanFVM
     }
     
     /**
-     * configure multiple configuration settings
-     * @params array
-     */
-    public static function configureAll($c)
-    {
-        if(!is_array($c)){
-            throw new \exception('RedBeanFVM :: configureAll() expects an array! `'.gettype($c).'` given.';
-        }
-        foreach($c as $k => $v){
-            self::configure($k,$v);
-        }
-    }
-
-    /**
-     * Configures a single property in the config array.
-     * @param string $k the key in the config array
-     * @param mixed $v the new value to set.
-     * @return void
-     */
-    public static function configure($k,$v)
-    {
-        if(isset(self::$config[$k])){
-            self::$config[$k] = $v;
-        }else{
-            throw new \exception('RedBeanFVM :: configure() `'.$k.'` is not a valid configuration option.');
-        }
-    }
-    
-    /**
      * Convert a key to snake casing before setting it to the bean.
      * @param string $property the key.
      * @return string
      */
-    private function snake_case($property)
+    private function snake_case($key)
     {
-        return strtolower(trim(preg_replace("/(_)\\1+/", "$1",preg_replace('/([^a-zA-Z_])/','_',$test)),'_'));
+        return strtolower(trim(preg_replace("/(_)\\1+/", "$1",preg_replace('/([^a-zA-Z_])/','_',$key)),'_'));
     }
     
     /**
@@ -199,10 +170,13 @@ class RedBeanFVM
     public function custom_filter($name,$callable)
     {
         if(empty($name)){
-            throw new \exception('RedbeanFVM :: custom_filter() An Invalid Name was declared.');
+            throw new \exception('RedBeanFVM :: custom_filter() An Invalid Name was declared.');
+        }
+        if(method_exists($this,$name)){
+            throw new \exception('RedBeanFVM :: custom_filter() `'.$name.'()` is a built in method of RedBeanFVM and a custom filter of that name may not be declared.');
         }
         if(!is_callable($callable)){
-            throw new \exception('RedbeanFVM :: custom_filter() Method `'.$name.'` isn\'t a valid callable!');
+            throw new \exception('RedBeanFVM :: custom_filter() Method `'.$name.'` isn\'t a valid callable!');
         }
         $info = new \ReflectionFunction($callable);
         if( $info->getNumberOfParameters() !== 1 || $info->getNumberOfRequiredParameters() !== 1 ){
@@ -227,93 +201,78 @@ class RedBeanFVM
     
     
     // only a-z
-    public function az($str)
+    public function az($input)
     {
-        return preg_replace( '/[^a-zA-Z]/','', trim($str) );
+        return preg_replace( '/[^a-zA-Z]/','', trim($input) );
     }
     
     // self explanatory
-    public function az_upper($str)
+    public function az_upper($input)
     {
-        return strtoupper($this->az($str));
+        return strtoupper($this->az($input));
     }
     
     // self explanatory
-    public function az_lower($str)
+    public function az_lower($input)
     {
-        return strtolower($this->az($str));
+        return strtolower($this->az($input));
     }
     
     //remove all but typically allowed charachters in a business entity name, Eg: #1 Plumbing-Contractors & Associates, Ltd.
-    public function business_name($name)
+    public function business_name($input)
     {
-        return preg_replace( '/[^A-Za-z\,\.\-\&\#0-9 ]+/','', trim($name) );
+        return preg_replace( '/[^A-Za-z\,\.\-\&\# ]+/','', trim($input) );
     }
-	
-	
-	public function user_name($input,$min=3,$max=55)
-	{
-		if( !preg_match( '/^[^A-Za-z.\-_0-9 ]{'.$min.','.$max.'}$/', trim($input) ) )
-            throw new \exception('Username may only contain letters, numbers, periods, spaces, and underscores.');
-        }
-	}
     
     //cast to int
-    public function cast_int($val)
+    public function cast_int($input)
     {
-        return ((int) $val);
+        return ((int) $input);
     }
     
     //validate an email
-    public function email($email)
+    public function email($input)
     {
-        if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
+        if(!filter_var($input,FILTER_VALIDATE_EMAIL)){
             throw new \exception('invalid email address');
         }
-        return $email;
+        return $input;
     }
     
     //the minimalist filter
-    public function min($in)
+    public function min($input)
     {
-        return stripslashes(strip_tags(trim($in)));
+        return stripslashes(strip_tags(trim($input)));
     }
     
     //remove all non word charachters with safeguard. 
-    //unfortunately this method is not chainable, however you could work around it by defining a custom filter with a use statement:
-    /*
-        $min = 5;
-        $max = 55;
-        $fvm = RedBeanFVM::getInstance();
-        $custom_filter = function($input) use($min,$max,$filter){ return $filter->name($input,$min,$max); }
-    */
-    public function name($name, $min = 2,$max = 30)
+    public function name($input, $min = 2,$max = 30)
     {
-        $name = preg_replace( '/[^ \w]+/','', trim($name) );
-        if(!preg_match('/^[a-zA-Z ]{'.$min.','.$max.'}$/', $name)){
+        $input = preg_replace( '/[^ \w]+/','', trim($input) );
+        if(!preg_match('/^[a-zA-Z ]{'.$min.','.$max.'}$/', $input)){
             throw new \exception('Please Enter an alphabetic name between 2 and 30 charachters. Spaces are allowed.');
         }
-        return $name;
+        return $input;
     }
     
     //normalize the date format from html5 date inputs. Probably needs work in the future.
-    public function normalize_date($str)
+    public function normalize_date($input)
     {
-        if(strpos($str,'-') !== false){
+        if(strpos($input,'-') !== false){
             $seperator = '-';
         }
-        else if(strpos($str,'/') !== false){
+        else if(strpos($input,'/') !== false){
             $seperator = '/';
         }
-        else if(strpos($str,',') !== false){
+        else if(strpos($input,',') !== false){
             $seperator = ',';
         }else{
             throw new \exception('Invalid separator used. Use - OR / OR , to separate the date.');
         }
-        if(substr_count($str,$seperator) !== 2){
+        if(substr_count($input,$seperator) !== 2){
             throw new \exception('Malformed Date given in form.');
         }
-        $t = explode($seperator,$str);
+        $t = explode($seperator,$input);
         if(count($t) !== 3){
             throw new \exception("Invalid date");
         }
@@ -350,27 +309,27 @@ class RedBeanFVM
     
     public function us_state_abbr($state)
     {
-        $state = strtoupper($state);
+        $input = strtoupper($input);
         $states = array_keys(self::$states);
-        if(!in_array($state,$states)){
+        if(!in_array($input,$states)){
             throw new \exception('That isnt a real state.');
         }
-        return $state;
+        return $input;
     }
     
-    public function us_state_full($state)
+    public function us_state_full($input)
     {
-        $state = strtoupper($state);
+        $input = strtoupper($input);
         $states = array_values(self::$states);
-        if(!in_array($state,$states)){
+        if(!in_array($input,$states)){
             throw new \exception('That isnt a real state.');
         }
-        return $state;
+        return $input;
     }
     
-    public function us_zipcode($str)
+    public function us_zipcode($input)
     {
-        if (!preg_match( '/^\d{5}([\-]?\d{4})?$/i',$str)){
+        if (!preg_match( '/^\d{5}([\-]?\d{4})?$/i',$input)){
             throw new \exception('Invalid Zip Code Entered.');
         }
         return $str;
