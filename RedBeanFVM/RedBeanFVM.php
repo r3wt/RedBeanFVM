@@ -42,16 +42,53 @@ class RedBeanFVM
         'password'=>[
             'cost'=>12, //cost of password_hash
             'algo'=>PASSWORD_DEFAULT //password algo. see PHP Manual entry for password_hash() for more info.
-        ]
+        ],
+		'locale'=>'US'
     ]; 
     
-    private static $locale; //in the future, language specific packs will reside under this variable.
-    private static $custom_filters = []; //allow users to register custom filters. 
+    private static $locale_filters = null; //load a locale filter set.
+    private static $custom_filters = [];   //allow users to register custom filters. 
     
     /**
      * Protected Ctor
      */
-    protected function __construct(){}
+    protected function __construct(){
+		$c = self::$config;
+		$locale = '\\RedBeanFVM\\Locale\\'.$c['locale'];
+		self::$locale_filters = new $locale();
+	}
+	
+	/**
+     * configure multiple configuration settings
+     * @param Array $c
+     */
+    public static function configure($c)
+    {
+        if(!is_array($c)){
+            throw new \exception('RedBeanFVM :: configureAll() expects an array! `'.gettype($c).'` given.';
+        }
+        foreach($c as $k => $v){
+            if(isset(self::$config[$k])){
+				self::$config[$k] = $v;
+			}else{
+				throw new \exception('RedBeanFVM :: configure() `'.$k.'` is not a valid configuration option.');
+			}
+        }
+		//if settings changed on an instantiated instance, we must reinstantiate.
+		if(self::$instance !== null){ 
+			self::destroy(); 
+			self::getInstance();
+		}
+    }
+	
+	/**
+     * Destroy the Singleton instance of RedBeanFVM
+     * @return void
+     */
+	private static function destroyInstance()
+	{
+		self::$instance === null;
+	}
     
     /**
      * Retrieve the Singleton instance of RedBeanFVM
@@ -150,6 +187,7 @@ class RedBeanFVM
     {
         return isset(self::$custom_filters[$function]);
     }
+	
     /**
      * executes the custom filtering functions and returns the output
      * @param string $function the named callable
@@ -160,6 +198,27 @@ class RedBeanFVM
     {
         $method = self::$custom_filters[$function];
         return call_user_func_array($method,$input);
+    }
+	
+	/**
+     * checks $locale_filters for the presence of the named callable
+     * @param string $function the named callable
+     * @return bool
+     */
+    private function locale_filter_exists($function)
+    {
+        return method_exists(self::$locale_filters, $function);
+    }
+	
+    /**
+     * executes the custom filtering functions and returns the output
+     * @param string $function the named callable
+     * @param mixed $input the data to be filtered by the function.
+     * @return mixed
+     */
+    private function locale_filter_exec($function,$input)
+    {
+        return self::$localefilters->{$function}($input);
     }
     
     /**
