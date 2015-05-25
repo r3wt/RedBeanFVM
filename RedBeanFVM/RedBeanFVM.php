@@ -52,7 +52,8 @@ class RedBeanFVM
     /**
      * Protected Ctor
      */
-    protected function __construct(){
+    protected function __construct()
+    {
         $c = self::$config;
         $locale = '\\RedBeanFVM\\Locale\\'.$c['locale'];
         self::$locale_filters = new $locale();
