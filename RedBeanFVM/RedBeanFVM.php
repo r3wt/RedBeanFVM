@@ -43,7 +43,7 @@ class RedBeanFVM
             'cost'=>12, //cost of password_hash
             'algo'=>PASSWORD_DEFAULT //password algo. see PHP Manual entry for password_hash() for more info.
         ],
-		'locale'=>'US'
+        'locale'=>'US'
     ]; 
     
     private static $locale_filters = null; //load a locale filter set.
@@ -53,12 +53,12 @@ class RedBeanFVM
      * Protected Ctor
      */
     protected function __construct(){
-		$c = self::$config;
-		$locale = '\\RedBeanFVM\\Locale\\'.$c['locale'];
-		self::$locale_filters = new $locale();
-	}
-	
-	/**
+        $c = self::$config;
+        $locale = '\\RedBeanFVM\\Locale\\'.$c['locale'];
+        self::$locale_filters = new $locale();
+    }
+    
+    /**
      * configure multiple configuration settings
      * @param Array $c
      */
@@ -69,26 +69,26 @@ class RedBeanFVM
         }
         foreach($c as $k => $v){
             if(isset(self::$config[$k])){
-				self::$config[$k] = $v;
-			}else{
-				throw new \exception('RedBeanFVM :: configure() `'.$k.'` is not a valid configuration option.');
-			}
+                self::$config[$k] = $v;
+            }else{
+                throw new \exception('RedBeanFVM :: configure() `'.$k.'` is not a valid configuration option.');
+            }
         }
-		//if settings changed on an instantiated instance, we must reinstantiate.
-		if(self::$instance !== null){ 
-			self::destroy(); 
-			self::getInstance();
-		}
+        //if settings changed on an instantiated instance, we must reinstantiate.
+        if(self::$instance !== null){ 
+            self::destroy(); 
+            self::getInstance();
+        }
     }
-	
-	/**
+    
+    /**
      * Destroy the Singleton instance of RedBeanFVM
      * @return void
      */
-	private static function destroyInstance()
-	{
-		self::$instance === null;
-	}
+    private static function destroyInstance()
+    {
+        self::$instance === null;
+    }
     
     /**
      * Retrieve the Singleton instance of RedBeanFVM
@@ -109,6 +109,9 @@ class RedBeanFVM
     {
         if($this->custom_filter_exists($function)){
             return $this->custom_filter_exec($function,$args);
+        }
+        if($this->locale_filter_exists($function)){
+            return $this->locale_filter_exec($function,$args);
         }
         throw new \exception('RedbeanFVM ::  Method `'.$function.'` doesn\'t exist!');
     }
@@ -187,7 +190,7 @@ class RedBeanFVM
     {
         return isset(self::$custom_filters[$function]);
     }
-	
+    
     /**
      * executes the custom filtering functions and returns the output
      * @param string $function the named callable
@@ -199,8 +202,8 @@ class RedBeanFVM
         $method = self::$custom_filters[$function];
         return call_user_func_array($method,$input);
     }
-	
-	/**
+    
+    /**
      * checks $locale_filters for the presence of the named callable
      * @param string $function the named callable
      * @return bool
@@ -209,7 +212,7 @@ class RedBeanFVM
     {
         return method_exists(self::$locale_filters, $function);
     }
-	
+    
     /**
      * executes the custom filtering functions and returns the output
      * @param string $function the named callable
@@ -354,97 +357,4 @@ class RedBeanFVM
     {
         return preg_replace('/\s+/', ' ', trim($input));
     }
-    
-    /* BEGIN US SPECIFIC FUNCTIONS IN FUTURE THIS BLOCK SHOULD BE MOVED TO a Locales class. */
-    
-    public function us_phone($input)
-    {
-        $input = preg_replace( '/[^0-9]/','', trim($input) );
-        if(!preg_match('/^([0-9]){10}$/', $input)){
-            throw new \exception($input);
-        }
-        return $input;
-    }
-    
-    public function us_state_abbr($state)
-    {
-        $input = strtoupper($input);
-        $states = array_keys(self::$states);
-        if(!in_array($input,$states)){
-            throw new \exception('That isnt a real state.');
-        }
-        return $input;
-    }
-    
-    public function us_state_full($input)
-    {
-        $input = strtoupper($input);
-        $states = array_values(self::$states);
-        if(!in_array($input,$states)){
-            throw new \exception('That isnt a real state.');
-        }
-        return $input;
-    }
-    
-    public function us_zipcode($input)
-    {
-        if (!preg_match( '/^\d{5}([\-]?\d{4})?$/i',$input)){
-            throw new \exception('Invalid Zip Code Entered.');
-        }
-        return $str;
-    }
-
-    private static $states = [
-        'AL'=>'ALABAMA',
-        'AK'=>'ALASKA',
-        'AZ'=>'ARIZONA',
-        'AR'=>'ARKANSAS',
-        'CA'=>'CALIFORNIA',
-        'CO'=>'COLORADO',
-        'CT'=>'CONNECTICUT',
-        'DE'=>'DELAWARE',
-        'DC'=>'DISTRICT OF COLUMBIA',
-        'FL'=>'FLORIDA',
-        'GA'=>'GEORGIA',
-        'HI'=>'HAWAII',
-        'ID'=>'IDAHO',
-        'IL'=>'ILLINOIS',
-        'IN'=>'INDIANA',
-        'IA'=>'IOWA',
-        'KS'=>'KANSAS',
-        'KY'=>'KENTUCKY',
-        'LA'=>'LOUISIANA',
-        'ME'=>'MAINE',
-        'MD'=>'MARYLAND',
-        'MA'=>'MASSACHUSETTS',
-        'MI'=>'MICHIGAN',
-        'MN'=>'MINNESOTA',
-        'MS'=>'MISSISSIPPI',
-        'MO'=>'MISSOURI',
-        'MT'=>'MONTANA',
-        'NE'=>'NEBRASKA',
-        'NV'=>'NEVADA',
-        'NH'=>'NEW HAMPSHIRE',
-        'NJ'=>'NEW JERSEY',
-        'NM'=>'NEW MEXICO',
-        'NY'=>'NEW YORK',
-        'NC'=>'NORTH CAROLINA',
-        'ND'=>'NORTH DAKOTA',
-        'OH'=>'OHIO',
-        'OK'=>'OKLAHOMA',
-        'OR'=>'OREGON',
-        'PA'=>'PENNSYLVANIA',
-        'RI'=>'RHODE ISLAND',
-        'SC'=>'SOUTH CAROLINA',
-        'SD'=>'SOUTH DAKOTA',
-        'TN'=>'TENNESSEE',
-        'TX'=>'TEXAS',
-        'UT'=>'UTAH',
-        'VT'=>'VERMONT',
-        'VA'=>'VIRGINIA',
-        'WA'=>'WASHINGTON',
-        'WV'=>'WEST VIRGINIA',
-        'WI'=>'WISCONSIN',
-        'WY'=>'WYOMING'
-    ];
 }

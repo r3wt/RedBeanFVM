@@ -4,9 +4,9 @@ namespace RedBeanFVM\Locale;
 
 class US
 {
-	function __construct(){}	
-	
-	public function us_phone($input)
+    function __construct(){}    
+    
+    public function us_phone($input)
     {
         $input = preg_replace( '/[^0-9]/','', trim($input) );
         if(!preg_match('/^([0-9]){10}$/', $input)){
