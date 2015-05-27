@@ -76,8 +76,8 @@ class RedBeanFVM
             }
         }
         //if settings changed on an instantiated instance, we must reinstantiate.
-        if(self::$instance !== null){ 
-            self::destroy(); 
+        if(!is_null(self::$instance)){ 
+            self::destroyInstance(); 
             self::getInstance();
         }
     }
