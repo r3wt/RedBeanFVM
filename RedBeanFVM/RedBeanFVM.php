@@ -43,13 +43,13 @@ class RedBeanFVM
             'cost'=>12, //cost of password_hash
             'algo'=>PASSWORD_DEFAULT //password algo. see PHP Manual entry for password_hash() for more info.
         ],
-        'locale'=>'\\RedBeanFVM\\Locale\\US' //default locale is this.
-		'user_filters'=>''
+        'locale'=>'\\RedBeanFVM\\Locale\\US', //default locale is this.
+        'user_filters'=>''
     ]; 
     
     private static $locale_filters = null; //load a locale filter set.
     private static $custom_filters = [];   //allow users to register custom filters. 
-	private static $user_filters = null; //load a class of custom filters.
+    private static $user_filters = null; //load a class of custom filters.
     
     /**
      * Protected Ctor
@@ -57,13 +57,13 @@ class RedBeanFVM
     protected function __construct()
     {
         $c = self::$config;
-		if(!empty($c['locale'] && class_exists($c['locale'])){
-			self::$locale_filters = new $c['locale']();//instantiate the set locale class.
-		}
-		
-		if(!empty($c['user_filters'] && class_exists($c['user_filters'])){
-			self::$user_filters = new $c['user_filters']();//instantiate the set locale class.
-		}
+        if(!empty($c['locale']) && class_exists($c['locale'])){
+            self::$locale_filters = new $c['locale']();//instantiate the set locale class.
+        }
+        
+        if(!empty($c['user_filters']) && class_exists($c['user_filters'])){
+            self::$user_filters = new $c['user_filters']();//instantiate the set locale class.
+        }
     }
     
     /**
@@ -118,7 +118,7 @@ class RedBeanFVM
         if($this->custom_filter_exists($function)){
             return $this->custom_filter_exec($function,$args);
         }
-		if($this->user_filter_exists($function)){
+        if($this->user_filter_exists($function)){
             return $this->user_filter_exec($function,$args);
         }
         if($this->locale_filter_exists($function)){
@@ -169,13 +169,13 @@ class RedBeanFVM
      */
     public function generate_model( &$bean, $required, $optional = [], $source = $_POST)
     {
-        $this->required($bean,)
+        $this->required($bean,$required,$source);
         $this->optional($bean,$optional,$source);
     }
-	
-	public function required( &$bean, $required, $source = $_POST)
-	{
-		foreach($required as $k => $v){
+    
+    public function required( &$bean, $required, $source = $_POST)
+    {
+        foreach($required as $k => $v){
             if(!isset($source[$k])){
                 throw new \exception('Missing form value: '.ucFirst($k));
             }
@@ -185,11 +185,11 @@ class RedBeanFVM
                 $bean->{ $this->snake_case($k) } = $this->{$v}($source[$k]);
             }
         }
-	}
-	
-	public function optional( &$bean, $optional = [], $source = $_POST)
-	{
-		foreach($optional as $k => $v){
+    }
+    
+    public function optional( &$bean, $optional = [], $source = $_POST)
+    {
+        foreach($optional as $k => $v){
             if(isset($source[$k])){
                 if(!empty($source[$k])){
                     if(is_array($v)){
@@ -200,20 +200,20 @@ class RedBeanFVM
                 }
             }
         }
-	}
-	
-	public function checkbox( &$bean, $checkboxes, $source = $_POST)
-	{
-		foreach($checkbox as $k=>$v)
-		{
-			$bean->{ $this->snake_case($k) } = (int) (isset($source[$k]) && $source[$k] == $v);
-		}
-	}
-	
-	public function files( &$bean, $required, $optional=[], $source = $_FILES)
-	{
-		throw new \exception('file uploads not yet implemented');
-	}
+    }
+    
+    public function checkbox( &$bean, $checkboxes, $source = $_POST)
+    {
+        foreach($checkbox as $k=>$v)
+        {
+            $bean->{ $this->snake_case($k) } = (int) (isset($source[$k]) && $source[$k] == $v);
+        }
+    }
+    
+    public function files( &$bean, $required, $optional=[], $source = $_FILES)
+    {
+        throw new \exception('file uploads not yet implemented');
+    }
     
     /**
      * checks $custom_filters for the presence of the named callable
@@ -257,8 +257,8 @@ class RedBeanFVM
     {
         return call_user_func_array([self::$locale_filters,$function],$args);
     }
-	
-	/**
+    
+    /**
      * checks $user_filters for the presence of the named callable
      * @param string $function the named callable
      * @return bool
