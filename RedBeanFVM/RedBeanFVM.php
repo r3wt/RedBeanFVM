@@ -57,11 +57,11 @@ class RedBeanFVM
     protected function __construct()
     {
         $c = self::$config;
-        if(!empty($c['locale']) && class_exists($c['locale'])){
+        if(!empty($c['locale']) && class_exists($c['locale'],true)){
             self::$locale_filters = new $c['locale']();//instantiate the set locale class.
         }
         
-        if(!empty($c['user_filters']) && class_exists($c['user_filters'])){
+        if(!empty($c['user_filters']) && class_exists($c['user_filters'],true)){
             self::$user_filters = new $c['user_filters']();//instantiate the set locale class.
         }
     }
@@ -265,7 +265,7 @@ class RedBeanFVM
      */
     private function user_filter_exists($function)
     {
-        return is_object(self::$locale_filters) && method_exists(self::$locale_filters, $function);
+        return is_object(self::$user_filters) && method_exists(self::$user_filters, $function);
     }
     
     /**
