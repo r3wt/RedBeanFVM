@@ -38,13 +38,13 @@ class RedBeanFVM
     private static $instance = null;
     
     private static $config = [
-        'raise'=>true,//whether to raise exception or not for missing value in required array.
         'password'=>[
             'cost'=>12, //cost of password_hash
             'algo'=>PASSWORD_DEFAULT //password algo. see PHP Manual entry for password_hash() for more info.
         ],
         'locale'=>'\\RedBeanFVM\\Locale\\US', //default locale is this.
-        'user_filters'=>''
+        'user_filters'=>'',
+		'optional_defaults'=>false
     ]; 
     
     private static $locale_filters = null; //load a locale filter set.
@@ -190,15 +190,24 @@ class RedBeanFVM
     public function optional( &$bean, $optional = [], $source = $_POST)
     {
         foreach($optional as $k => $v){
-            if(isset($source[$k])){
-                if(!empty($source[$k])){
-                    if(is_array($v)){
-                        $bean->{ $this->snake_case($k) } = $this->chain($v,$source[$k]);
-                    }else{
-                        $bean->{ $this->snake_case($k) } = $this->{$v}($source[$k]);
-                    }
-                }
-            }
+			$default = false;
+			if(self::$config['optional_defaults']){
+				if(!is_array($v)){
+					throw new \exception('optional expects an array of rules when `optional_defaults` is true. the last element in the array will be used as the default value.');
+				}
+				$default = array_pop($v);
+			}
+            if(isset($source[$k]) && !empty($source[$k])){
+				if(is_array($v)){
+					$bean->{ $this->snake_case($k) } = $this->chain($v,$source[$k]);
+				}else{
+					$bean->{ $this->snake_case($k) } = $this->{$v}($source[$k]);
+				}
+			}else{
+				if($default){
+					$bean->{ $this->snake_case($k) } = $default;
+				}
+			}
         }
     }
     

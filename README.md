@@ -190,6 +190,75 @@ RedbeanFVM makes Filtering, Validating , and Generating RedBean Models easy.
 
     $bean->foo = $fvm->foo($input);
     ```
+	
+9. checkboxes
+
+	```php
+	
+	$checkboxes = [
+		'remember_me'=>1,//the expected value of the input field.
+		'email_subscribe'=>1,
+	];
+	
+	$fvm->checkbox($bean,$checkboxes,$_POST);
+	```
+	
+10. loading a custom filter class.
+	
+	```php
+	//latest version of RedbeanFVM introduces the ability to load a custom class of filters. this way you 
+	//can write code for your filters in a normal class instead of relying on `RedbeanFVM::custom_filter()`
+	//at present time, it is only possible to load a single class, in future support for passing an array of classes is possible,
+	//although personally i believe it to be cleaner to use a single class.
+	
+	//note: namespaces must be escaped as shown
+	
+	\RedBeanFVM\RedBeanFVM::configure([
+		'user_filters'=>'\\App\\Util\\CustomFilters'
+	]);
+
+	```
+	
+11. required and optional can be called directly.
+
+	```
+	$required = [...rules];
+	$optional = [...rules;
+	
+	$fvm->required($bean,$required,$_POST);
+	$fvm->optional($bean,$optional,$_POST);
+	
+	```
+
+12. file uploads (coming soonish)
+
+13. all config options and their default values.
+
+	```php
+	\RedbeanFVM\RedbeanFVM::configure([
+        'password'=>[
+            'cost'=>12, //cost of password_hash
+            'algo'=>PASSWORD_DEFAULT //password algo. see PHP Manual entry for password_hash() for more info.
+        ],
+        'locale'=>'\\RedBeanFVM\\Locale\\US', //default locale is this.
+        'user_filters'=>'',//load a custom class of filters. filter methods must be public.
+		'optional_defaults'=>false //require that optional parameters are provided a default. see example 13 for more info.
+    ]);
+	```
+
+14. optional defaults explained.
+
+	```php
+	//say you want a field to be optional, but it needs a default value if not specified right?
+	//FVM will expect that you provide an array of rules, with the last rule being the default value like so
+	$optional = [
+		'about_me'=>['paragraph','no info provided'],
+		'phone_number'=>['us_phone','not provided']
+	];
+	//as you can see its pretty convenient to type and should be simple to get the hang of. 
+	//if users don't like this, please open an issue and we can think of an alternative way to handle it.
+	//this option is disabled by default.
+	```
 
 ### Requirements:
 
