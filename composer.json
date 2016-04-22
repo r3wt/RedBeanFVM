@@ -2,14 +2,16 @@
     "name": "redbean-fvm/redbean-fvm",
     "description": "Redbean FVM makes Filtering,Validating , and Generating RedBean Models easy.",
     "license": "MIT",
-    "keywords": ["RedBean","Plugin","Filter","Validation","Model","Data"],
+    "keywords": ["RedBeanPHP","RedBean","Plugin","Filter","Validation","Model","Data"],
     "authors": [
         {
             "name": "Garrett R. Morris",
             "email": "stuckinabox@live.com"
         }
     ],
-    "require": {},
+    "require": {
+        "gabordemooij/redbean": ">=4.1"
+	},
     "require-dev": {},
     "autoload": {
         "psr-0": {
