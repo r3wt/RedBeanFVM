@@ -7,7 +7,7 @@
  * @copyright   2015 Garrett R. Morris
  * @link        https://github.com/r3wt/RedBeanFVM
  * @license     http://www.opensource.org/licenses/mit-license.php
- * @version     0
+ * @version     1.0.4
  * @package     redbean-fvm
  *
  * MIT LICENSE
