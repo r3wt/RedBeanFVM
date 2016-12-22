@@ -213,7 +213,7 @@ class RedBeanFVM
     
     public function checkbox( &$bean, $checkboxes, $source = $_POST)
     {
-        foreach($checkbox as $k=>$v)
+        foreach($checkboxes as $k=>$v)
         {
             $bean->{ $this->snake_case($k) } = (int) (isset($source[$k]) && $source[$k] == $v);
         }
