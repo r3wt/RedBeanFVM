@@ -156,7 +156,7 @@ class RedBeanFVM
      */
     private function snake_case($key)
     {
-        return strtolower(trim(preg_replace("/(_)\\1+/", "$1",preg_replace('/([^a-zA-Z_])/','_',$key)),'_'));
+        return strtolower(trim(preg_replace("/(_)\\1+/", "$1",preg_replace('/([^a-zA-Z0-9_])/','_',$key)),'_'));
     }
     
     /**
