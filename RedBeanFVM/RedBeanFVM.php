@@ -167,14 +167,20 @@ class RedBeanFVM
      * @param  Array $source An array of data where to look for the keys. Default is post
      * @return void
      */
-    public function generate_model( &$bean, $required, $optional = [], $source = $_POST)
+    public function generate_model( &$bean, $required, $optional = [], $source=false)
     {
+        if(!isset($source)){
+            $source = $_POST;
+        }
         $this->required($bean,$required,$source);
         $this->optional($bean,$optional,$source);
     }
     
-    public function required( &$bean, $required, $source = $_POST)
+    public function required( &$bean, $required, $source=false)
     {
+        if(!isset($source)){
+            $source = $_POST;
+        }
         foreach($required as $k => $v){
             if(!isset($source[$k])){
                 throw new \exception('Missing form value: '.ucFirst($k));
@@ -187,8 +193,11 @@ class RedBeanFVM
         }
     }
     
-    public function optional( &$bean, $optional = [], $source = $_POST)
+    public function optional( &$bean, $optional = [], $source=false)
     {
+        if(!isset($source)){
+            $source = $_POST;
+        }
         foreach($optional as $k => $v){
 			$default = false;
 			if(self::$config['optional_defaults']){
@@ -211,16 +220,22 @@ class RedBeanFVM
         }
     }
     
-    public function checkbox( &$bean, $checkboxes, $source = $_POST)
+    public function checkbox( &$bean, $checkboxes, $source=false)
     {
+        if(!isset($source)){
+            $source = $_POST;
+        }
         foreach($checkboxes as $k=>$v)
         {
             $bean->{ $this->snake_case($k) } = (int) (isset($source[$k]) && $source[$k] == $v);
         }
     }
     
-    public function files( &$bean, $required, $optional=[], $source = $_FILES)
+    public function files( &$bean, $required, $optional=[], $source=false)
     {
+        if(!isset($source)){
+            $source = $_FILES;
+        }
         throw new \exception('file uploads not yet implemented');
     }
     
