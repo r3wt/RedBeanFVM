@@ -206,11 +206,15 @@ class RedBeanFVM
 				}
 				$default = array_pop($v);
 			}
-            if(isset($source[$k]) && !empty($source[$k])){
-				if(is_array($v)){
-					$bean->{ $this->snake_case($k) } = $this->chain($v,$source[$k]);
+            if(isset($source[$k])){
+				if(empty($source[$k]){
+					$bean{ $this->snake_case($k) } = isset($default) ? $default: '';
 				}else{
-					$bean->{ $this->snake_case($k) } = $this->{$v}($source[$k]);
+					if(is_array($v)){
+						$bean->{ $this->snake_case($k) } = $this->chain($v,$source[$k]);
+					}else{
+						$bean->{ $this->snake_case($k) } = $this->{$v}($source[$k]);
+					}
 				}
 			}else{
 				if($default){
